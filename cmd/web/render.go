@@ -39,7 +39,7 @@ func (app *application) renderTemplate(w http.ResponseWriter, r *http.Request, p
 
 	_, templateInMap := app.templateCache[templateToRender]
 
-	if app.config.env == "producction" && templateInMap {
+	if app.config.env == "production" && templateInMap {
 		t = app.templateCache[templateToRender]
 	} else {
 		t, err = app.parseTemplate(partials, page, templateToRender)
@@ -71,7 +71,7 @@ func (app *application) parseTemplate(partials []string, page, templateTORender 
 	//
 	if len(partials) > 0 {
 		for i, x := range partials {
-			partials[i] = fmt.Sprintf("tamplates/%s.partial.gohtml", x)
+			partials[i] = fmt.Sprintf("templates/%s.partial.gohtml", x)
 		}
 	}
 
