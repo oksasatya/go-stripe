@@ -8,7 +8,7 @@
 		const payButton = document.getElementById("pay-button");
 		const processing = document.getElementById("processing-payment");
 
-		stripe = Stripe({{index .StringMap "publishable_key"}});
+		stripe = Stripe({{.StripePublishableKey}});
 
 		function hidePayButton() {
 			payButton.classList.add("d-none");
@@ -45,7 +45,7 @@
 			form.classList.add("was-validated");
 			hidePayButton();
 
-			let amountToCharge = String(parseFloat(document.getElementById("amount").value) * 100)
+			let amountToCharge = String(parseFloat(document.getElementById("amount").value))
 
 			let payload = {
 				amount: amountToCharge,
@@ -60,8 +60,7 @@
 				},
 				body: JSON.stringify(payload),
 			}
-
-			fetch({{index .StringMap "targetPath"}},requestOptions)
+			fetch("{{.API}}/api/payment-intent",requestOptions)
 				.then(response => response.text())
 				.then(response => {
 					let data;
@@ -130,5 +129,6 @@
 				}
 			});
 		})();
+
     </script>
 {{end}}

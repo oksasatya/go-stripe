@@ -9,26 +9,63 @@ import (
 )
 
 type templateData struct {
-	StringMap       map[string]string
-	IntMap          map[string]int
-	FloatMap        map[string]float32
-	Data            map[string]interface{}
-	CsrfToken       string
-	Flash           string
-	Warning         string
-	Error           string
-	IsAuthenticated int
-	API             string
-	CSSVersion      string
+	StringMap            map[string]string
+	IntMap               map[string]int
+	FloatMap             map[string]float32
+	Data                 map[string]interface{}
+	CsrfToken            string
+	Flash                string
+	Warning              string
+	Error                string
+	IsAuthenticated      int
+	API                  string
+	CSSVersion           string
+	StripeSecretKey      string
+	StripePublishableKey string
 }
 
-var functions = template.FuncMap{}
+var functions = template.FuncMap{
+	"formatCurrency": formatCurrency,
+}
+
+func formatCurrency(n int) string {
+	//convert int to a string
+	s := fmt.Sprintf("%d", n)
+
+	//Reverse string
+	r := []rune(s)
+	for i, j := 0, len(r)-1; i < j; i, j = i+1, j-1 {
+		r[i], r[j] = r[j], r[i]
+	}
+
+	//insert comma separators
+	var sb strings.Builder
+
+	for i, c := range r {
+		if i > 0 && i%3 == 0 {
+			sb.WriteRune(',')
+		}
+		sb.WriteRune(c)
+	}
+
+	// reverse the string back to the original order
+	formatted := sb.String()
+	r = []rune(formatted)
+	for i, j := 0, len(r)-1; i < j; i, j = i+1, j-1 {
+		r[i], r[j] = r[j], r[i]
+	}
+
+	//return the formatted string with "Rp" Prefix
+	return "Rp " + string(r)
+}
 
 //go:embed templates
 var tempateFs embed.FS
 
 func (app *application) addDefaultData(td *templateData, r *http.Request) *templateData {
 	td.API = app.config.api
+	td.StripeSecretKey = app.config.stripe.secret
+	td.StripePublishableKey = app.config.stripe.key
 	return td
 }
 
@@ -46,7 +83,6 @@ func (app *application) renderTemplate(w http.ResponseWriter, r *http.Request, p
 		if err != nil {
 			app.errorLog.Println(err)
 			return err
-
 		}
 	}
 
