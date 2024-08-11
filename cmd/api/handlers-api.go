@@ -49,7 +49,10 @@ func (app *application) GetPaymentIntent(w http.ResponseWriter, r *http.Request)
 	}
 
 	if okay {
-		out, err := json.MarshalIndent(pi, "", "   ")
+		response := map[string]string{
+			"client_secret": pi.ClientSecret,
+		}
+		out, err := json.MarshalIndent(response, "", "   ")
 		if err != nil {
 			app.errorLog.Println(err)
 			return

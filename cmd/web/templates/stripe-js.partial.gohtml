@@ -45,11 +45,10 @@
 			form.classList.add("was-validated");
 			hidePayButton();
 
-			let amountToCharge = String(parseFloat(document.getElementById("amount").value))
-
+			let amountToCharge = String(document.getElementById("amount").value * 100);
 			let payload = {
 				amount: amountToCharge,
-				currency: 'IDR',
+				currency: `IDR`,
 			}
 
 			const requestOptions = {

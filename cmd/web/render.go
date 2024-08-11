@@ -29,18 +29,17 @@ var functions = template.FuncMap{
 }
 
 func formatCurrency(n int) string {
-	//convert int to a string
+	// Convert int to string
 	s := fmt.Sprintf("%d", n)
 
-	//Reverse string
+	// Reverse the string
 	r := []rune(s)
 	for i, j := 0, len(r)-1; i < j; i, j = i+1, j-1 {
 		r[i], r[j] = r[j], r[i]
 	}
 
-	//insert comma separators
+	// Insert comma separators
 	var sb strings.Builder
-
 	for i, c := range r {
 		if i > 0 && i%3 == 0 {
 			sb.WriteRune(',')
@@ -48,14 +47,14 @@ func formatCurrency(n int) string {
 		sb.WriteRune(c)
 	}
 
-	// reverse the string back to the original order
+	// Reverse the string back to the original order
 	formatted := sb.String()
 	r = []rune(formatted)
 	for i, j := 0, len(r)-1; i < j; i, j = i+1, j-1 {
 		r[i], r[j] = r[j], r[i]
 	}
 
-	//return the formatted string with "Rp" Prefix
+	// Return the formatted string with "Rp" prefix
 	return "Rp " + string(r)
 }
 
