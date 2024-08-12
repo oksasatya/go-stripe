@@ -29,6 +29,7 @@ var functions = template.FuncMap{
 }
 
 func formatCurrency(n int) string {
+	n /= 100
 	// Convert int to string
 	s := fmt.Sprintf("%d", n)
 
@@ -42,7 +43,7 @@ func formatCurrency(n int) string {
 	var sb strings.Builder
 	for i, c := range r {
 		if i > 0 && i%3 == 0 {
-			sb.WriteRune(',')
+			sb.WriteRune('.')
 		}
 		sb.WriteRune(c)
 	}
@@ -55,7 +56,7 @@ func formatCurrency(n int) string {
 	}
 
 	// Return the formatted string with "Rp" prefix
-	return "Rp " + string(r)
+	return fmt.Sprintf("Rp%s,00", string(r))
 }
 
 //go:embed templates

@@ -10,4 +10,4 @@ create_table("widgets") {
 sql("ALTER TABLE widgets MODIFY COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;")
 sql("ALTER TABLE widgets MODIFY COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;")
 
-sql("INSERT INTO widgets (name,description,inventory_level,price) VALUES ('widget','A very nice widget',10,1000);")
+sql("INSERT INTO widgets (name,description,inventory_level,price) VALUES ('widget','A very nice widget',10,10000);")

@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/go-chi/chi/v5"
+	"go-stripe/internal/cards"
 	"net/http"
 	"strconv"
 )
@@ -27,13 +28,48 @@ func (app *application) PaymentSucceeded(w http.ResponseWriter, r *http.Request)
 	paymentAmount := r.Form.Get("payment_amount")
 	paymentCurrency := r.Form.Get("payment_currency")
 
-	data := make(map[string]interface{})
-	data["cardholder"] = cardHolder
-	data["email"] = email
-	data["pi"] = paymentIntent
-	data["pm"] = paymentMethod
-	data["pa"] = paymentAmount
-	data["pc"] = paymentCurrency
+	card := cards.Card{
+		Secret: app.config.stripe.secret,
+		Key:    app.config.stripe.key,
+	}
+
+	pi, err := card.RetrievePaymentIntent(paymentIntent)
+	if err != nil {
+		app.errorLog.Println(err)
+		return
+	}
+
+	pm, err := card.GetPaymentMethod(paymentMethod)
+	if err != nil {
+		app.errorLog.Println(err)
+		return
+	}
+
+	lastFour := pm.Card.Last4
+	expiryMonth := pm.Card.ExpMonth
+	expiryYear := pm.Card.ExpYear
+
+	// format display data
+	formattedAmount, err := strconv.Atoi(paymentAmount)
+	if err != nil {
+		app.errorLog.Println(err)
+		return
+	}
+	paymentAmount = formatCurrency(formattedAmount)
+
+	//data := make(map[string]interface{})
+	data := map[string]interface{}{
+		"cardholder":       cardHolder,
+		"email":            email,
+		"pi":               paymentIntent,
+		"pm":               paymentMethod,
+		"pa":               paymentAmount,
+		"pc":               paymentCurrency,
+		"lastFour":         lastFour,
+		"expiryMonth":      expiryMonth,
+		"expiryYear":       expiryYear,
+		"bank_return_code": pi.Charges.Data[0].ID,
+	}
 
 	if err := app.renderTemplate(w, r, "succeeded", &templateData{
 		Data: data,
