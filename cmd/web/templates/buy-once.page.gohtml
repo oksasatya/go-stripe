@@ -18,22 +18,31 @@
 
         <input type="hidden" name="product_id" value="{{$widget.ID}}">
         <input type="hidden" name="amount" id="amount" value="{{$widget.Price}}">
-        <h3 class="mt-2 text-center mb-3">{{$widget.Name}} : {{formatCurrency $widget.Price}}</h3>
+        <h3 class="mt-2 text-center mb-3" id="currency">{{$widget.Name}} : {{$widget.Price}}</h3>
         <p>{{$widget.Description}}</p>
         <hr>
 
-
         <div class="mb-3">
-            <label for="cardholder-name" class="form-label">Cardholder Name</label>
+            <label for="first-name" class="form-label">First Name</label>
+            <input type="text" class="form-control" id="first-name" name="first_name"
+                   required="" autocomplete="first-name-new">
+        </div>
+        <div class="mb-3">
+            <label for="last-name" class="form-label">Last Name</label>
+            <input type="text" class="form-control" id="last-name" name="last_name"
+                   required="" autocomplete="last-name-new">
+        </div>
+        <div class="mb-3">
+            <label for="cardholder-email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="cardholder-email" name="email"
+                   required="" autocomplete="cardholder-email-new">
+        </div>
+        <div class="mb-3">
+            <label for="cardholder-name" class="form-label">Name on Card</label>
             <input type="text" class="form-control" id="cardholder-name" name="cardholder_name"
                    required="" autocomplete="cardholder-name-new">
         </div>
 
-        <div class="mb-3">
-            <label for="cardholder-email" class="form-label">Cardholder Email</label>
-            <input type="email" class="form-control" id="cardholder-email" name="email"
-                   required="" autocomplete="cardholder-email-new">
-        </div>
 
         <div class="mb-3">
             <label for="card-element" class="form-label">Credit Card</label>
@@ -60,5 +69,30 @@
 
 {{end}}
 {{define "js"}}
+    <script>
+	    document.addEventListener('DOMContentLoaded', function() {
+		    let currencyElement = document.getElementById('currency');
+
+		    let textContent = currencyElement.textContent;
+
+		    let parts = textContent.split(':');
+
+		    let price = parts[1].trim();
+
+		    let priceNumber = parseFloat(price);
+
+		    let formatter = new Intl.NumberFormat('id-ID', {
+			    style: 'currency',
+			    currency: 'IDR',
+		    });
+
+		    if (!isNaN(priceNumber)) {
+			    let formattedPrice = formatter.format(priceNumber);
+			    currencyElement.textContent = `${parts[0]} : ${formattedPrice}`;
+		    } else {
+			    currencyElement.textContent = "Harga tidak valid";
+		    }
+	    });
+    </script>
     {{template "stripe-js".}}
 {{end}}

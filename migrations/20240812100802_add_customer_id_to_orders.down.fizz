@@ -1,1 +1,1 @@
-drop_column("orders", customer_id);
+drop_column("orders", "customer_id");
